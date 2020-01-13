@@ -1,0 +1,14 @@
+{
+    "sdktestenv": {
+        "awscloudformation": {
+            "AuthRoleName": "sdktest-sdktestenv-20200113092822-authRole",
+            "UnauthRoleArn": "arn:aws:iam::300536574903:role/sdktest-sdktestenv-20200113092822-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::300536574903:role/sdktest-sdktestenv-20200113092822-authRole",
+            "Region": "ap-northeast-2",
+            "DeploymentBucketName": "sdktest-sdktestenv-20200113092822-deployment",
+            "UnauthRoleName": "sdktest-sdktestenv-20200113092822-unauthRole",
+            "StackName": "sdktest-sdktestenv-20200113092822",
+            "StackId": "arn:aws:cloudformation:ap-northeast-2:300536574903:stack/sdktest-sdktestenv-20200113092822/9b4031e0-359b-11ea-8131-0a86bceb3baa"
+        }
+    }
+}
