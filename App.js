@@ -1,5 +1,6 @@
 import React,{
-  useState
+  useState,
+  useEffect
 } from 'react';
 import {
   View,
@@ -11,33 +12,26 @@ import {
 import gql from 'graphql-tag'
 import { graphql } from 'react-apollo'
 // import { useQuery } from '@apollo/react-hooks';
-// import { useQuery } from 'react-apollo-hooks'
+import { useQuery } from 'react-apollo-hooks'
 
-// import Amplify, { API, graphqlOperation } from "aws-amplify";
-// import * as mutations from './src/graphql/mutations';
+// import { buildSubscription } from 'aws-appsync'
+
+import * as mutations from './src/graphql/mutations';
 import * as queries from './src/graphql/queries';
+import * as subscriptions from './src/graphql/subscriptions'
 
-// const getList = () => {
-//   const query = useQuery(gql(queries.listTodos), {
-//     fetchPolicy: 'cache-and-network',
-//   });
-//   return query;
-// };
-
-// const listTodos = gql(queries.listTodos)
-
-// export default (props) => {
-const App = () => {
-
+const App = (props) => {
+  console.log(props)
   const [ inputText, setInputText ] = useState("")
-  // const newTodo = await API.graphql(graphqlOperation(mutations.createTodo, {input: {name:'I', description:"inputText"}}))
-  // console.log(newTodo)
-  const [ listTodo, setListTodo ] = useState([])
-  // console.log(getList())
-  // API.graphql(graphqlOperation(queries.listTodos)).then(response =>setListTodo(response.data.listTodos.items))
-  btnPressed=()=>{
-    // console.log('sgasg')
-    // API.graphql(graphqlOperation(mutations.createTodo, {input: {name:'fromApp', description:inputText}}))
+  const [ listTodo, setListTodo ] = useState(props.todos)
+
+  useEffect(() => {
+    props.subscribeToNewTodos()
+    // props.data.subscribeToMore(
+    //   buildSubscription(gql(subscriptions.onCreateTodo), gql(queries.listTodos))
+    // )
+  },[])
+  const btnPressed=()=>{
   }
 
   return (
@@ -119,6 +113,25 @@ export default graphql(gql(queries.listTodos), {
     fetchPolicy: 'cache-and-network'
   },
   props: props => ({
-    todos: props.data.listTodos ? props.data.listTodos.items : []
+    todos: props.data.listTodos ? props.data.listTodos.items : [],
+    subscribeToNewTodos: params => {
+      props.data.subscribeToMore({
+        document: gql(subscriptions.onCreateTodo),
+        updateQuery: (prev, { subscriptionData: { data : { onCreateTodo } } }) => ({
+          ...prev,
+          listTodos: { __typename: 'TodoConnection', items: [onCreateTodo, ...prev.listTodos.items.filter(todo => todo.id !== onCreateTodo.id)] }
+        })
+      })
+    }
   })
 })(App)
+
+// export default graphql(gql(queries.listTodos), {
+//   options: {
+//     fetchPolicy: 'cache-and-network'
+//   },
+//   props: props => ({
+//     todos: props.data.listTodos ? props.data.listTodos.items : [],
+//     data: props.data
+//   })
+// })(App)
